@@ -29,3 +29,7 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+
+# Environment variables
+.env
+.env.local
