@@ -4,11 +4,13 @@ import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    basicSsl(),
     legacy(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -45,6 +47,16 @@ export default defineConfig({
       }
     })
   ],
+  server: {
+    host: true,
+    port: 5173,
+    allowedHosts: true
+  },
+  preview: {
+    host: true,
+    port: 5173,
+    allowedHosts: true
+  },
   test: {
     globals: true,
     environment: 'jsdom',
