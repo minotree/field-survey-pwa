@@ -3,6 +3,10 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 
+/* Leaflet map styles and marker icon configuration */
+import 'leaflet/dist/leaflet.css';
+import './utils/leafletConfig';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
