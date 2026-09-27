@@ -30,7 +30,7 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        {isAuthenticatedUser ? <Home /> : <Login />}
+        {isAuthenticatedUser ? <Home /> : <Login onLoginSuccess={() => setIsAuthenticatedUser(true)} />}
       </IonReactRouter>
     </IonApp>
   );
