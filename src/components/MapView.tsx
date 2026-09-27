@@ -5,8 +5,13 @@ import 'leaflet/dist/leaflet.css';
 import { getCurrentPosition } from '../services/geolocation';
 import { reverseGeocode } from '../services/geocoding';
 
+interface Center {
+  lat: number;
+  lng: number;
+}
+
 const MapView: React.FC = () => {
-  const [center, setCenter] = useState<L.LatLng>({ lat: 37.5665, lng: 126.9780 });
+  const [center, setCenter] = useState<Center>({ lat: 37.5665, lng: 126.9780 });
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -18,7 +23,11 @@ const MapView: React.FC = () => {
       setCenter({ lat: position.latitude, lng: position.longitude });
       setAccuracy(position.accuracy);
     } catch (error) {
-      alert(error.message);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('현재 위치를 가져오는 중 오류가 발생했습니다.');
+      }
     }
   }, []);
 
@@ -28,7 +37,7 @@ const MapView: React.FC = () => {
       const result = await reverseGeocode(lat, lng);
       setAddress(result.address);
     } catch (error) {
-      console.error('Address lookup failed:', error);
+      console.error('주소 조회 중 오류가 발생했습니다:', error);
     } finally {
       setLoading(false);
     }
@@ -38,7 +47,7 @@ const MapView: React.FC = () => {
     if (mapRef.current) {
       mapRef.current.on('moveend', () => {
         const newCenter = mapRef.current!.getCenter();
-        setCenter(newCenter);
+        setCenter({ lat: newCenter.lat, lng: newCenter.lng });
         fetchAddress(newCenter.lat, newCenter.lng);
       });
     }
