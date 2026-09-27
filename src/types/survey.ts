@@ -1,14 +1,17 @@
 export interface SurveyData {
   id?: string;
-  created_at?: string;
   facility_name: string;
-  category: string;
   latitude: number;
   longitude: number;
+  accuracy?: number | null;
   address: string;
-  photo_url?: string;
+  original_photo_url?: string | null;
+  stamped_photo_url?: string | null;
   memo?: string;
   surveyor?: string;
+  category?: string;
+  photo_url?: string;
+  created_at?: string;
 }
 
 export interface Coordinates {
@@ -30,4 +33,22 @@ export interface GeocodingResult {
   address: string;
   roadAddress?: string;
   raw?: unknown;
+}
+
+export interface SurveyLocationRow {
+  id?: string;
+  facility_name: string;
+  latitude: number;
+  longitude: number;
+  accuracy?: number | null;
+  address: string;
+  original_photo_path?: string | null;
+  stamped_photo_path?: string | null;
+  taken_at?: string | null;
+  review_status?: string;
+  review_note?: string;
+  linked_site_id?: string | null;
+  created_by?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
