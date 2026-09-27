@@ -15,7 +15,11 @@ const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }) => 
       await signIn(email, password);
       onLoginSuccess();
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('로그인 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
