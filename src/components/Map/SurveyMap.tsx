@@ -158,15 +158,6 @@ export const SurveyMap: React.FC<SurveyMapProps> = ({
             <Popup>
               <div className="survey-popup-content">
                 <div className="survey-popup-title">{survey.facility_name}</div>
-                <div className="survey-popup-category">{survey.category}</div>
-                {survey.photo_url && (
-                  <img
-                    src={survey.photo_url}
-                    alt={survey.facility_name}
-                    className="survey-popup-img"
-                    loading="lazy"
-                  />
-                )}
                 <div className="survey-popup-addr">📍 {survey.address}</div>
                 {survey.memo && (
                   <div style={{ marginTop: '4px', color: '#444', fontSize: '12px' }}>
