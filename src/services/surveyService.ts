@@ -22,19 +22,13 @@ export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<
 
 export async function saveSurvey(
   survey: Omit<SurveyData, 'id' | 'created_at'>,
-  originalPhotoBlob?: Blob,
   stampedPhotoBlob?: Blob
 ): Promise<SurveyData> {
   try {
-    let originalPhotoUrl: string | null = null;
     let stampedPhotoUrl: string | null = null;
 
-    if (originalPhotoBlob) {
-      originalPhotoUrl = await uploadSurveyPhoto(originalPhotoBlob, `original/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
-    }
-
     if (stampedPhotoBlob) {
-      stampedPhotoUrl = await uploadSurveyPhoto(stampedPhotoBlob, `stamped/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
+      stampedPhotoUrl = await uploadSurveyPhoto(stampedPhotoBlob, `representative/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
     }
 
     const surveyLocationRow: SurveyLocationRow = {
@@ -43,9 +37,9 @@ export async function saveSurvey(
       longitude: survey.longitude,
       accuracy: survey.accuracy,
       address: survey.address,
-      original_photo_path: originalPhotoUrl,
       stamped_photo_path: stampedPhotoUrl,
       review_note: survey.memo,
+      taken_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
@@ -55,6 +49,10 @@ export async function saveSurvey(
 
     if (error) {
       throw new Error('Failed to save survey');
+    }
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      throw new Error('Invalid data received from Supabase');
     }
 
     const savedSurvey = data[0];
