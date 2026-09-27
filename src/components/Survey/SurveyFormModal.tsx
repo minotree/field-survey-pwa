@@ -10,8 +10,6 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonSelect,
-  IonSelectOption,
   IonTextarea,
   IonLoading,
   IonToast,
@@ -32,16 +30,6 @@ interface SurveyFormModalProps {
   onSurveySaved: (savedSurvey: SurveyData) => void;
 }
 
-const CATEGORIES = [
-  '도로/교통시설',
-  '상하수도시설',
-  '전기/통신시설',
-  '방재/안전시설',
-  '공공/편의시설',
-  '건축/구조물',
-  '기타',
-];
-
 export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
   isOpen,
   centerCoords,
@@ -51,10 +39,8 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
   onSurveySaved,
 }) => {
   const [facilityName, setFacilityName] = useState('');
-  const [category, setCategory] = useState('도로/교통시설');
   const [customAddress, setCustomAddress] = useState(address);
   const [memo, setMemo] = useState('');
-  const [surveyor, setSurveyor] = useState(localStorage.getItem('last_surveyor') || '');
   const [photoResult, setPhotoResult] = useState<WatermarkResult | null>(initialPhoto || null);
 
   useEffect(() => {
@@ -92,19 +78,13 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
 
     setSaving(true);
     try {
-      if (surveyor) {
-        localStorage.setItem('last_surveyor', surveyor);
-      }
-
       const newSurvey = await saveSurvey(
         {
           facility_name: facilityName.trim(),
-          category,
           latitude: centerCoords.latitude,
           longitude: centerCoords.longitude,
           address: customAddress.trim() || address,
           memo: memo.trim(),
-          surveyor: surveyor.trim(),
         },
         photoResult ? photoResult.blob : undefined
       );
@@ -123,7 +103,6 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
 
   const resetForm = () => {
     setFacilityName('');
-    setCategory('도로/교통시설');
     setMemo('');
     setPhotoResult(null);
   };
@@ -169,22 +148,6 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
                 required
                 onIonInput={(e) => setFacilityName(e.detail.value || '')}
               />
-            </IonItem>
-
-            {/* 시설 분류 */}
-            <IonItem lines="inset">
-              <IonLabel position="stacked">시설 구분</IonLabel>
-              <IonSelect
-                value={category}
-                onIonChange={(e) => setCategory(e.detail.value)}
-                interface="action-sheet"
-              >
-                {CATEGORIES.map((cat) => (
-                  <IonSelectOption key={cat} value={cat}>
-                    {cat}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
             </IonItem>
 
             {/* 변환된 주소 (수정 가능) */}
@@ -241,16 +204,6 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
               )}
             </div>
 
-            {/* 조사자 */}
-            <IonItem lines="inset">
-              <IonLabel position="stacked">조사자명</IonLabel>
-              <IonInput
-                value={surveyor}
-                placeholder="조사자 이름"
-                onIonInput={(e) => setSurveyor(e.detail.value || '')}
-              />
-            </IonItem>
-
             {/* 비고/메모 */}
             <IonItem lines="inset">
               <IonLabel position="stacked">현장 상태 및 특이사항 메모</IonLabel>
@@ -301,8 +254,6 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
           address: customAddress || address,
           latitude: centerCoords.latitude,
           longitude: centerCoords.longitude,
-          facilityName: facilityName.trim() || undefined,
-          surveyor: surveyor.trim() || undefined,
         }}
         onClose={() => setIsCameraOpen(false)}
         onPhotoReady={handlePhotoReady}
