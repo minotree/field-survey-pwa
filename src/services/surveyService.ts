@@ -1,6 +1,6 @@
 import { SurveyData } from '../types/survey';
 import { supabase } from './supabase';
-import { getFromLocalStorage, saveToLocalStorage } from './localStorage';
+
 
 const TABLE_NAME = 'survey_locations';
 const STORAGE_BUCKET = 'survey-photos';
