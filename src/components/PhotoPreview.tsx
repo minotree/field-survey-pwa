@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonButton, IonText, IonImg } from '@ionic/react';
 import { stampImage } from '../utils/imageOverlay';
 
