@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonButton, IonText, IonImg } from '@ionic/react';
+import { stampImage } from '../utils/imageOverlay';
 
 interface PhotoPreviewProps {
-  file: Blob | File;
+  file: File;
   latitude: number;
   longitude: number;
   address: string;
@@ -11,21 +12,22 @@ interface PhotoPreviewProps {
 }
 
 const PhotoPreview: React.FC<PhotoPreviewProps> = ({ file, latitude, longitude, address, takenAt, onRetake }) => {
-  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [stampedFile, setStampedFile] = useState<Blob | null>(null);
 
   useEffect(() => {
-    const url = URL.createObjectURL(file);
-    setObjectUrl(url);
-
-    return () => {
-      URL.revokeObjectURL(url);
+    const stamp = async () => {
+      const stamped = await stampImage(file, latitude, longitude, address, takenAt);
+      setStampedFile(stamped);
     };
-  }, [file]);
+    stamp();
+  }, [file, latitude, longitude, address, takenAt]);
 
   return (
     <IonContent>
-      {objectUrl && (
-        <IonImg src={objectUrl} alt="Preview" style={{ width: '100%', height: 'auto', marginTop: '10px' }} />
+      {stampedFile ? (
+        <IonImg src={URL.createObjectURL(stampedFile)} alt="Stamped" style={{ width: '100%', height: 'auto', marginTop: '10px' }} />
+      ) : (
+        <IonImg src="/default-image.png" alt="Default" style={{ width: '100%', height: 'auto', marginTop: '10px' }} />
       )}
       <IonButton expand="block" onClick={onRetake} style={{ marginTop: '10px' }}>
         재촬영

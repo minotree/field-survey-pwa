@@ -1,6 +1,7 @@
 import { SurveyData } from '../types/survey';
 import { supabase } from './supabase';
 
+
 const TABLE_NAME = 'survey_locations';
 const STORAGE_BUCKET = 'survey-photos';
 
@@ -10,6 +11,7 @@ export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<
     .upload(path, photoBlob, {
       contentType: 'image/jpeg',
       cacheControl: '3600',
+      upsert: false,
     });
 
   if (error) {
@@ -21,14 +23,25 @@ export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<
 
 export async function saveSurvey(
   survey: Omit<SurveyData, 'id' | 'created_at'>,
-  stampedPhotoBlob: Blob
+  originalPhotoBlob?: Blob,
+  stampedPhotoBlob?: Blob
 ): Promise<SurveyData> {
   try {
-    const stampedPhotoPath = await uploadSurveyPhoto(stampedPhotoBlob, `representative/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
+    let originalPhotoUrl: string | null = null;
+    let stampedPhotoUrl: string | null = null;
+
+    if (originalPhotoBlob) {
+      originalPhotoUrl = await uploadSurveyPhoto(originalPhotoBlob, `original/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
+    }
+
+    if (stampedPhotoBlob) {
+      stampedPhotoUrl = await uploadSurveyPhoto(stampedPhotoBlob, `stamped/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
+    }
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .insert([{ ...survey, stamped_photo_path: stampedPhotoPath }]);
+      .insert([{ ...survey, original_photo_url: originalPhotoUrl, stamped_photo_url: stampedPhotoUrl }])
+      .select();
 
     if (error) {
       throw new Error('Failed to save survey');

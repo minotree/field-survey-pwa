@@ -1,16 +1,33 @@
 export interface SurveyData {
   id?: string;
   created_at?: string;
+  facility_name: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  photo_url?: string;
+  memo?: string;
+  surveyor?: string;
+}
+
+export interface Coordinates {
   latitude: number;
   longitude: number;
   accuracy?: number;
+}
+
+export interface WatermarkOptions {
   address: string;
-  original_photo_path?: string;
-  stamped_photo_path?: string;
-  taken_at: string;
-  review_status?: 'pending' | 'approved' | 'rejected';
-  review_note?: string;
-  linked_site_id?: string;
-  created_by?: string;
-  updated_at?: string;
+  latitude: number;
+  longitude: number;
+  timestamp?: Date;
+  facilityName?: string;
+  surveyor?: string;
+}
+
+export interface GeocodingResult {
+  address: string;
+  roadAddress?: string;
+  raw?: unknown;
 }
