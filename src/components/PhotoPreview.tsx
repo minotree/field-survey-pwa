@@ -24,8 +24,10 @@ const PhotoPreview: React.FC<PhotoPreviewProps> = ({ file, latitude, longitude, 
 
   return (
     <IonContent>
-      {stampedFile && (
+      {stampedFile ? (
         <IonImg src={URL.createObjectURL(stampedFile)} alt="Stamped" style={{ width: '100%', height: 'auto', marginTop: '10px' }} />
+      ) : (
+        <IonImg src="/default-image.png" alt="Default" style={{ width: '100%', height: 'auto', marginTop: '10px' }} />
       )}
       <IonButton expand="block" onClick={onRetake} style={{ marginTop: '10px' }}>
         재촬영
