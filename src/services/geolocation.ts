@@ -32,7 +32,7 @@ export async function getCurrentPosition(): Promise<GeolocationResult> {
           case error.TIMEOUT:
             reject(new Error('The request to get user location timed out.'));
             break;
-          case error.UNKNOWN_ERROR:
+          default:
             reject(new Error('An unknown error occurred.'));
             break;
         }
