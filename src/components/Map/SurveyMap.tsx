@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import { CenterPin } from './CenterPin';
 import { userLocationIcon, facilityIcon } from './mapIcons';
 import { Coordinates, SurveyData } from '../../types/survey';
