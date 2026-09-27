@@ -7,6 +7,7 @@ import { reverseGeocode } from '../services/geocoding';
 import { getCurrentPosition } from '../services/geolocation';
 import { Coordinates, SurveyData } from '../types/survey';
 import { saveSurvey } from '../services/surveyService';
+import { stampImage } from '../utils/imageOverlay';
 
 const SurveyPage: React.FC = () => {
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
@@ -57,19 +58,23 @@ const SurveyPage: React.FC = () => {
     setIsSaving(true);
 
     const surveyData: Omit<SurveyData, 'id' | 'created_at'> = {
-      description: surveyDescription,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
       accuracy: coordinates.accuracy || 0,
       address: address,
       taken_at: takenAt.toISOString(),
+      review_note: surveyDescription,
     };
 
     try {
-      await saveSurvey(surveyData, capturedFile, stampedFile);
+      await saveSurvey(surveyData, stampedFile);
       setSaveSuccess(true);
     } catch (error) {
-      alert('서베이 저장에 실패했습니다.');
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('서베이 저장에 실패했습니다.');
+      }
     } finally {
       setIsSaving(false);
     }
