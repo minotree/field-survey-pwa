@@ -16,7 +16,11 @@ import {
 import { signIn } from '../services/authService';
 import './Login.css';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onLoginSuccess: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +31,7 @@ const Login: React.FC = () => {
     try {
       await signIn(email, password);
       setToastMessage('로그인 성공');
-      // Redirect to home or another page after successful login
+      onLoginSuccess();
     } catch (error) {
       console.error('로그인 실패:', error);
       setToastMessage('이메일 또는 비밀번호가 올바르지 않습니다.');
