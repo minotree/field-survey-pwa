@@ -4,6 +4,8 @@ import { IonReactRouter } from '@ionic/react-router';
 import Login from './components/Login';
 import Home from './pages/Home';
 import { isAuthenticated } from './services/authService';
+import '@ionic/react/css/ionic.bundle.css';
+import './theme/variables.css';
 
 const App: React.FC = () => {
   const [authChecked, setAuthChecked] = useState(false);
