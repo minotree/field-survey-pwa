@@ -10,7 +10,6 @@ export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<
     .upload(path, photoBlob, {
       contentType: 'image/jpeg',
       cacheControl: '3600',
-      upsert: false,
     });
 
   if (error) {
@@ -39,8 +38,7 @@ export async function saveSurvey(
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .insert([{ ...survey, original_photo_url: originalPhotoUrl, stamped_photo_url: stampedPhotoUrl }])
-      .select();
+      .insert([{ ...survey, original_photo_url: originalPhotoUrl, stamped_photo_url: stampedPhotoUrl }]);
 
     if (error) {
       throw new Error('Failed to save survey');
