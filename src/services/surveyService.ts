@@ -1,6 +1,5 @@
-import { SurveyData } from '../types/survey';
+import { SurveyData, SurveyLocationRow } from '../types/survey';
 import { supabase } from './supabase';
-
 
 const TABLE_NAME = 'survey_locations';
 const STORAGE_BUCKET = 'survey-photos';
@@ -38,9 +37,20 @@ export async function saveSurvey(
       stampedPhotoUrl = await uploadSurveyPhoto(stampedPhotoBlob, `stamped/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
     }
 
+    const surveyLocationRow: SurveyLocationRow = {
+      facility_name: survey.facility_name,
+      latitude: survey.latitude,
+      longitude: survey.longitude,
+      accuracy: survey.accuracy,
+      address: survey.address,
+      original_photo_path: originalPhotoUrl,
+      stamped_photo_path: stampedPhotoUrl,
+      review_note: survey.memo,
+    };
+
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .insert([{ ...survey, original_photo_url: originalPhotoUrl, stamped_photo_url: stampedPhotoUrl }])
+      .insert([surveyLocationRow])
       .select();
 
     if (error) {
@@ -66,6 +76,10 @@ export async function getSurveys(): Promise<SurveyData[]> {
     if (error) {
       console.warn('Supabase DB 조회 오류, 로컬 캐시를 반환합니다:', error);
       return getFromLocalStorage();
+    }
+
+    if (!data || !Array.isArray(data)) {
+      throw new Error('Invalid data received from Supabase');
     }
 
     return data;
