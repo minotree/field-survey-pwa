@@ -30,7 +30,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture }) => {
         onChange={handleCapture}
         style={{ display: 'none' }}
       />
-      <IonButton expand="block" onClick={() => document.querySelector('input[type="file"]')?.click()}>
+      <IonButton expand="block" onClick={() => (document.querySelector('input[type="file"]') as HTMLInputElement).click()}>
         카메라 촬영
       </IonButton>
       {imageSrc && (
