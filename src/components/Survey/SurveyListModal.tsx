@@ -58,6 +58,11 @@ export const SurveyListModal: React.FC<SurveyListModalProps> = ({
                   onClose();
                 }}
               >
+                {survey.photo_url && (
+                  <IonThumbnail slot="start">
+                    <img src={survey.photo_url} alt={survey.facility_name} />
+                  </IonThumbnail>
+                )}
                 <IonLabel>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <h2 style={{ fontWeight: 700, margin: 0 }}>{survey.facility_name}</h2>
