@@ -1,40 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/react';
+import { IonApp, IonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
 import Login from './components/Login';
+import Home from './pages/Home';
 import { isAuthenticated } from './services/authService';
 
 const App: React.FC = () => {
+  const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
       const auth = await isAuthenticated();
       setIsAuthenticatedUser(auth);
+      setAuthChecked(true);
     };
 
     checkAuth();
   }, []);
 
+  if (!authChecked) {
+    return (
+      <IonApp>
+        <IonLoading isOpen={true} message="인증 확인 중..." />
+      </IonApp>
+    );
+  }
+
   return (
     <IonApp>
       <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <IonRouterOutlet id="main">
-            {isAuthenticatedUser ? (
-              <>
-                <Route path="/" element={<Home />} />
-              </>
-            ) : (
-              <>
-                <Route path="/login" element={<Login onLoginSuccess={() => setIsAuthenticatedUser(true)} />} />
-                <Route path="*" element={<Navigate to="/login" />} />
-              </>
-            )}
-          </IonRouterOutlet>
-        </IonSplitPane>
+        {isAuthenticatedUser ? <Home /> : <Login />}
       </IonReactRouter>
     </IonApp>
   );
