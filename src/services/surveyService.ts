@@ -3,6 +3,7 @@ import { supabase } from './supabase';
 
 const TABLE_NAME = 'survey_locations';
 const STORAGE_BUCKET = 'survey-photos';
+const SIGNED_URL_EXPIRATION = 60 * 60; // 1 hour
 
 export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<string> {
   const { data, error } = await supabase.storage
@@ -80,16 +81,30 @@ export async function getSurveys(): Promise<SurveyData[]> {
       throw new Error('Invalid data received from Supabase');
     }
 
-    const surveys: SurveyData[] = data.map(row => ({
-      id: row.id,
-      facility_name: row.facility_name,
-      latitude: row.latitude,
-      longitude: row.longitude,
-      accuracy: row.accuracy,
-      address: row.address,
-      memo: row.review_note,
-      photo_url: undefined,
-      created_at: row.created_at,
+    const surveys: SurveyData[] = await Promise.all(data.map(async (row) => {
+      let photoUrl: string | undefined = undefined;
+
+      if (row.stamped_photo_path) {
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .createSignedUrl(row.stamped_photo_path, SIGNED_URL_EXPIRATION);
+
+        if (!signedUrlError && signedUrlData && signedUrlData.signedUrl) {
+          photoUrl = signedUrlData.signedUrl;
+        }
+      }
+
+      return {
+        id: row.id,
+        facility_name: row.facility_name,
+        latitude: row.latitude,
+        longitude: row.longitude,
+        accuracy: row.accuracy,
+        address: row.address,
+        memo: row.review_note,
+        photo_url: photoUrl,
+        created_at: row.created_at,
+      };
     }));
 
     return surveys;
