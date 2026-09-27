@@ -1,25 +1,36 @@
 import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonLoading, IonText } from '@ionic/react';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonInput,
+  IonButton,
+  IonLabel,
+  IonItem,
+  IonText,
+  IonLoading,
+  IonToast,
+} from '@ionic/react';
 import { signIn } from '../services/authService';
+import './Login.css';
 
-const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }) => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
     setLoading(true);
-    setError(null);
     try {
       await signIn(email, password);
-      onLoginSuccess();
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('로그인 중 오류가 발생했습니다.');
-      }
+      setToastMessage('로그인 성공');
+      // Redirect to home or another page after successful login
+    } catch (error) {
+      console.error('로그인 실패:', error);
+      setToastMessage('이메일 또는 비밀번호가 올바르지 않습니다.');
     } finally {
       setLoading(false);
     }
@@ -28,28 +39,50 @@ const Login: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }) => 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonTitle>로그인</IonTitle>
         </IonToolbar>
       </IonHeader>
+
       <IonContent className="ion-padding">
         <IonLoading isOpen={loading} message="로그인 중..." />
-        {error && (
-          <IonText color="danger" style={{ textAlign: 'center', marginTop: '10px' }}>
-            {error}
-          </IonText>
-        )}
-        <IonItem>
-          <IonLabel position="floating">이메일</IonLabel>
-          <IonInput type="email" value={email} onIonChange={(e) => setEmail(e.detail.value!)} />
-        </IonItem>
-        <IonItem>
-          <IonLabel position="floating">비밀번호</IonLabel>
-          <IonInput type="password" value={password} onIonChange={(e) => setPassword(e.detail.value!)} />
-        </IonItem>
-        <IonButton expand="block" onClick={handleLogin} style={{ marginTop: '10px' }} disabled={loading}>
-          로그인
-        </IonButton>
+        <IonToast
+          isOpen={!!toastMessage}
+          message={toastMessage || ''}
+          duration={2000}
+          onDidDismiss={() => setToastMessage(null)}
+        />
+
+        <div className="login-container">
+          <IonItem className="login-item login-field">
+            <IonLabel position="floating" color="medium">이메일</IonLabel>
+            <IonInput
+              type="email"
+              value={email}
+              onIonChange={(e) => setEmail(e.detail.value || '')}
+              className="login-input"
+            />
+          </IonItem>
+
+          <IonItem className="login-item login-field">
+            <IonLabel position="floating" color="medium">비밀번호</IonLabel>
+            <IonInput
+              type="password"
+              value={password}
+              onIonChange={(e) => setPassword(e.detail.value || '')}
+              className="login-input"
+            />
+          </IonItem>
+
+          <IonButton
+            expand="block"
+            color="primary"
+            onClick={handleLogin}
+            className="login-button"
+          >
+            로그인
+          </IonButton>
+        </div>
       </IonContent>
     </IonPage>
   );

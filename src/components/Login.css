@@ -1,0 +1,7 @@
+.login-field ion-label {
+  color: #6b7280;
+}
+
+.login-field ion-input:focus-within ion-label {
+  color: var(--ion-color-primary);
+}
