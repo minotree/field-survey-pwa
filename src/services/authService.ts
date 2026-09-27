@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 export async function signIn(email: string, password: string) {
-  const { user, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -10,7 +10,7 @@ export async function signIn(email: string, password: string) {
     throw new Error(error.message);
   }
 
-  return user;
+  return data.user;
 }
 
 export async function signOut() {
@@ -22,26 +22,29 @@ export async function signOut() {
 }
 
 export async function getCurrentUser() {
-  const { user, error } = await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getUser();
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return user;
+  return data.user;
 }
 
 export async function getCurrentSession() {
-  const { session, error } = await supabase.auth.getSession();
+  const { data, error } = await supabase.auth.getSession();
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return session;
+  return data.session;
 }
 
 export async function isAuthenticated() {
   const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    throw new Error(error.message);
+  }
   return data.session !== null;
 }
