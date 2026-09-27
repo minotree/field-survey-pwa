@@ -129,9 +129,14 @@ const Home: React.FC = () => {
   }, [requestCurrentLocation, loadSurveys]);
 
   // 새 조사 등록 완료 핸들러
-  const handleSurveySaved = (newSurvey: SurveyData) => {
-    setSurveys((prev) => [newSurvey, ...prev]);
-    setToastMessage(`'${newSurvey.facility_name}' 조사가 성공적으로 등록되었습니다.`);
+  const handleSurveySaved = async (newSurvey: SurveyData) => {
+    try {
+      await loadSurveys();
+      setToastMessage(`'${newSurvey.facility_name}' 조사가 성공적으로 등록되었습니다.`);
+    } catch (err) {
+      console.error('조사 목록 재로드 실패:', err);
+      setToastMessage(`'${newSurvey.facility_name}' 조사가 성공적으로 등록되었습니다. 목록 재로드 중 오류가 발생했습니다.`);
+    }
   };
 
   // 목록에서 조사 선택 시 지도 중심 이동
