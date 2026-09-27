@@ -58,20 +58,13 @@ export const SurveyListModal: React.FC<SurveyListModalProps> = ({
                   onClose();
                 }}
               >
-                {survey.photo_url && (
-                  <IonThumbnail slot="start" style={{ borderRadius: '6px', overflow: 'hidden' }}>
-                    <img src={survey.photo_url} alt={survey.facility_name} />
-                  </IonThumbnail>
-                )}
                 <IonLabel>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <h2 style={{ fontWeight: 700, margin: 0 }}>{survey.facility_name}</h2>
-                    <IonBadge color="primary">{survey.category}</IonBadge>
                   </div>
                   <p style={{ fontSize: '12px', color: '#64748b' }}>📍 {survey.address}</p>
                   <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
                     {survey.created_at ? new Date(survey.created_at).toLocaleString('ko-KR') : ''}
-                    {survey.surveyor ? ` · 조사자: ${survey.surveyor}` : ''}
                   </p>
                 </IonLabel>
                 <IonIcon icon={locationOutline} slot="end" color="medium" />
