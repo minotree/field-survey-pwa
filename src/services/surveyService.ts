@@ -1,20 +1,14 @@
 import { SurveyData } from '../types/survey';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from './supabase';
 import { getFromLocalStorage, saveToLocalStorage } from './localStorage';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-const TABLE_NAME = 'surveys';
+const TABLE_NAME = 'survey_locations';
 const STORAGE_BUCKET = 'survey-photos';
 
-export async function uploadSurveyPhoto(photoBlob: Blob): Promise<string> {
-  const filename = `survey_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`;
-
+export async function uploadSurveyPhoto(photoBlob: Blob, path: string): Promise<string> {
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKET)
-    .upload(filename, photoBlob, {
+    .upload(path, photoBlob, {
       contentType: 'image/jpeg',
       cacheControl: '3600',
       upsert: false,
@@ -29,17 +23,24 @@ export async function uploadSurveyPhoto(photoBlob: Blob): Promise<string> {
 
 export async function saveSurvey(
   survey: Omit<SurveyData, 'id' | 'created_at'>,
-  photoBlob?: Blob
+  originalPhotoBlob?: Blob,
+  stampedPhotoBlob?: Blob
 ): Promise<SurveyData> {
   try {
-    let photoUrl: string | null = null;
-    if (photoBlob) {
-      photoUrl = await uploadSurveyPhoto(photoBlob);
+    let originalPhotoUrl: string | null = null;
+    let stampedPhotoUrl: string | null = null;
+
+    if (originalPhotoBlob) {
+      originalPhotoUrl = await uploadSurveyPhoto(originalPhotoBlob, `original/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
+    }
+
+    if (stampedPhotoBlob) {
+      stampedPhotoUrl = await uploadSurveyPhoto(stampedPhotoBlob, `stamped/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`);
     }
 
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .insert([{ ...survey, photo_url: photoUrl }])
+      .insert([{ ...survey, original_photo_url: originalPhotoUrl, stamped_photo_url: stampedPhotoUrl }])
       .select();
 
     if (error) {

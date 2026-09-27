@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonText } from '@ionic/react';
 import MapView from '../components/MapView';
 import CameraCapture from '../components/CameraCapture';
@@ -10,10 +10,13 @@ import { saveSurvey } from '../services/surveyService';
 
 const SurveyPage: React.FC = () => {
   const [capturedFile, setCapturedFile] = useState<File | null>(null);
+  const [stampedFile, setStampedFile] = useState<Blob | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [takenAt, setTakenAt] = useState<Date>(new Date());
   const [surveyDescription, setSurveyDescription] = useState<string>('');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
   const handleCapture = (file: File) => {
     setCapturedFile(file);
@@ -39,31 +42,48 @@ const SurveyPage: React.FC = () => {
 
   const handleRetake = () => {
     setCapturedFile(null);
+    setStampedFile(null);
+    setSaveSuccess(false);
   };
 
   const handleSaveSurvey = useCallback(async () => {
-    if (!coordinates || !address || !capturedFile) {
+    if (isSaving) return;
+
+    if (!coordinates || !address || !capturedFile || !stampedFile) {
       alert('모든 필드를 채워주세요.');
       return;
     }
+
+    setIsSaving(true);
 
     const surveyData: Omit<SurveyData, 'id' | 'created_at'> = {
       description: surveyDescription,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
+      accuracy: coordinates.accuracy || 0,
       address: address,
       taken_at: takenAt.toISOString(),
     };
 
     try {
-      await saveSurvey(surveyData, capturedFile);
-      alert('서베이가 성공적으로 저장되었습니다.');
-      setCapturedFile(null);
-      setSurveyDescription('');
+      await saveSurvey(surveyData, capturedFile, stampedFile);
+      setSaveSuccess(true);
     } catch (error) {
       alert('서베이 저장에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
-  }, [coordinates, address, capturedFile, surveyDescription]);
+  }, [isSaving, coordinates, address, capturedFile, stampedFile, surveyDescription]);
+
+  useEffect(() => {
+    const stamp = async () => {
+      if (capturedFile) {
+        const stamped = await stampImage(capturedFile, coordinates?.latitude || 0, coordinates?.longitude || 0, address || '', takenAt);
+        setStampedFile(stamped);
+      }
+    };
+    stamp();
+  }, [capturedFile, coordinates, address, takenAt]);
 
   return (
     <IonPage>
@@ -76,7 +96,7 @@ const SurveyPage: React.FC = () => {
         <MapView />
         {capturedFile ? (
           <PhotoPreview
-            file={capturedFile}
+            file={stampedFile || capturedFile}
             latitude={coordinates?.latitude || 0}
             longitude={coordinates?.longitude || 0}
             address={address || ''}
@@ -108,9 +128,19 @@ const SurveyPage: React.FC = () => {
               onChange={(e) => setSurveyDescription(e.target.value)}
               style={{ width: '100%', height: '100px', marginTop: '10px' }}
             />
-            <IonButton expand="block" onClick={handleSaveSurvey} style={{ marginTop: '10px' }}>
-              서베이 저장
+            <IonButton expand="block" onClick={handleSaveSurvey} style={{ marginTop: '10px' }} disabled={isSaving}>
+              서베이 저장 {isSaving && '...'}
             </IonButton>
+            {saveSuccess && (
+              <div>
+                <IonText style={{ textAlign: 'center', marginTop: '10px', color: 'green' }}>
+                  서베이가 성공적으로 저장되었습니다.
+                </IonText>
+                <IonButton expand="block" onClick={handleRetake} style={{ marginTop: '10px' }}>
+                  새 등록
+                </IonButton>
+              </div>
+            )}
           </div>
         )}
       </IonContent>
