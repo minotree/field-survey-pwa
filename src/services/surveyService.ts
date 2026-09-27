@@ -80,7 +80,19 @@ export async function getSurveys(): Promise<SurveyData[]> {
       throw new Error('Invalid data received from Supabase');
     }
 
-    return data;
+    const surveys: SurveyData[] = data.map(row => ({
+      id: row.id,
+      facility_name: row.facility_name,
+      latitude: row.latitude,
+      longitude: row.longitude,
+      accuracy: row.accuracy,
+      address: row.address,
+      memo: row.review_note,
+      photo_url: undefined,
+      created_at: row.created_at,
+    }));
+
+    return surveys;
   } catch (error) {
     console.error('Error fetching surveys:', error);
     return getFromLocalStorage();
