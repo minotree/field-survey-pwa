@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api-vworld/:path*",
+      "destination": "https://api.vworld.kr/:path*"
+    }
+  ]
+}
