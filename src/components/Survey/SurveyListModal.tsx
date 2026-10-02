@@ -11,7 +11,6 @@ import {
   IonItem,
   IonLabel,
   IonThumbnail,
-  IonBadge,
   IonIcon,
 } from '@ionic/react';
 import { locationOutline } from 'ionicons/icons';
@@ -34,7 +33,7 @@ export const SurveyListModal: React.FC<SurveyListModalProps> = ({
     <IonModal isOpen={isOpen} onDidDismiss={onClose}>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>조사 내역 목록 ({surveys.length}건)</IonTitle>
+          <IonTitle>오늘 조사 내역 목록 ({surveys.length}건)</IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={onClose}>닫기</IonButton>
           </IonButtons>
@@ -44,7 +43,7 @@ export const SurveyListModal: React.FC<SurveyListModalProps> = ({
       <IonContent className="ion-padding">
         {surveys.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-            <p style={{ fontSize: '16px' }}>아직 등록된 시설 조사 내역이 없습니다.</p>
+            <p style={{ fontSize: '16px', fontWeight: 600 }}>오늘 등록된 시설 조사 내역이 없습니다.</p>
             <p style={{ fontSize: '13px', color: '#999' }}>지도의 중심 핀으로 시설 위치를 지정하고 조사를 시작해 보세요.</p>
           </div>
         ) : (

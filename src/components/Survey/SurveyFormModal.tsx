@@ -163,14 +163,14 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
             {/* 사진 촬영 영역 */}
             <div style={{ margin: '20px 0 16px' }}>
               <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '8px', color: '#1e293b' }}>
-                현장 사진 (메타데이터 자동 합성)
+                현장 사진 (600×600 WebP 최적화)
               </div>
 
               {photoResult ? (
                 <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1' }}>
                   <img
                     src={photoResult.dataUrl}
-                    alt="합성된 현장 사진"
+                    alt="최적화된 현장 사진"
                     style={{ width: '100%', maxHeight: '240px', objectFit: 'cover', display: 'block' }}
                   />
                   <div
@@ -199,7 +199,7 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
                   onClick={handleOpenPhotoCapture}
                 >
                   <IonIcon slot="start" icon={cameraOutline} />
-                  사진 촬영 (주소/좌표/시각 합성)
+                  현장 사진 촬영 / 선택
                 </IonButton>
               )}
             </div>
@@ -247,7 +247,7 @@ export const SurveyFormModal: React.FC<SurveyFormModalProps> = ({
         </IonContent>
       </IonModal>
 
-      {/* 카메라 워터마크 모달 */}
+      {/* 카메라 최적화 촬영 모달 */}
       <CameraWatermarkModal
         isOpen={isCameraOpen}
         options={{

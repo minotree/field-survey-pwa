@@ -45,4 +45,14 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      // /api-vworld 경로로 들어오는 요청을 Vworld API 서버로 전달
+      '/api-vworld': {
+        target: 'https://api.vworld.kr',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-vworld/, ''),
+      },
+    },
+  },
 });

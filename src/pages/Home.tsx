@@ -44,13 +44,21 @@ const Home: React.FC = () => {
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 1. 역지오코딩 (Debounce 적용)
+  // 1. 역지오코딩 (Debounce 적용 및 타입 유연화)
   const fetchAddress = useCallback(async (lat: number, lng: number) => {
     setIsAddressLoading(true);
     try {
       const res = await reverseGeocode(lat, lng);
-      setAddress(res.address);
-    } catch {
+      // 문자열 반환값과 객체 반환값을 모두 처리 가능하도록 안전 처리
+      const resultAddress = typeof res === 'string' ? res : (res as any)?.address;
+
+      if (resultAddress) {
+        setAddress(resultAddress);
+      } else {
+        setAddress('주소 정보를 찾을 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('주소 변환 실패:', error);
       setAddress(`위도: ${lat.toFixed(6)}, 경도: ${lng.toFixed(6)}`);
     } finally {
       setIsAddressLoading(false);
