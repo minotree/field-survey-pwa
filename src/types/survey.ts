@@ -5,7 +5,6 @@ export interface SurveyData {
   longitude: number;
   accuracy?: number | null;
   address: string;
-  original_photo_url?: string | null;
   stamped_photo_url?: string | null;
   memo?: string;
   surveyor?: string;
@@ -42,7 +41,6 @@ export interface SurveyLocationRow {
   longitude: number;
   accuracy?: number | null;
   address: string;
-  original_photo_path?: string | null;
   stamped_photo_path?: string | null;
   taken_at?: string | null;
   review_status?: string;
